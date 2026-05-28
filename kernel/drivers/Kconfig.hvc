@@ -1,0 +1,52 @@
+menuconfig AGENTOS_HVC
+    bool "AgentOS Hardware Agent Controller (HAC) Drivers"
+    help
+      Drivers for the AgentOS HAC hypercall interface.
+      These replace traditional hardware drivers with thin
+      proxies that call into the HAC at EL2.
+
+if AGENTOS_HVC
+
+config HVC_DISPLAY
+    tristate "HVC Display Driver"
+    select FB
+    select FB_DEFERRED_IO
+    help
+      Framebuffer driver for HAC display control.
+      Maps display framebuffer and handles BLIT operations
+      via HVC calls to the HAC.
+
+config HVC_TOUCH
+    tristate "HVC Touchscreen Driver"
+    select INPUT
+    select INPUT_TOUCHSCREEN
+    select INPUT_MT
+    help
+      Multi-touch input driver backed by HAC touch primitives.
+      Reads touch events via HAC_HVC_TOUCH_POLL hypercalls
+      and reports to the Linux input subsystem.
+
+config HVC_STORAGE
+    tristate "HVC Block Storage Driver"
+    select BLK_MQ
+    help
+      Block device driver for NAND storage via HAC.
+      Routes all I/O through HAC_HVC_STORAGE_READ/WRITE.
+      Exposes ANS2 NVMe controller at EL2 via /dev/hvcblk0.
+
+config HVC_WIFI
+    tristate "HVC WiFi Network Driver"
+    select NET
+    select WIRELESS
+    help
+      Network driver for WiFi via HAC.
+      Routes frames through HAC_HVC_WIFI_TX/RX.
+
+config HVC_HAC
+    tristate "AgentOS HAC Control Device"
+    help
+      Character device /dev/hac for userspace access to
+      HAC hypercalls and IPC ring buffer.
+      Required for Supervisor Agent.
+
+endif # AGENTOS_HVC

@@ -1,0 +1,50 @@
+# Build artifacts
+build/
+dist/
+*.o
+*.a
+*.so
+*.elf
+*.bin
+*.image
+*.ko
+
+# Temporary files
+*.swp
+*.swo
+*~
+.DS_Store
+*.pyc
+__pycache__/
+
+# IDE files
+.vscode/
+.idea/
+*.code-workspace
+
+# Database files
+*.db
+*.sqlite3
+
+# User/system files
+.env
+.env.local
+*credentials*
+secrets/
+
+# Documentation build
+docs/_build/
+docs/.doctrees/
+
+# Compiler artifacts
+supervisor/build/
+hac/build/
+kernel/build/
+
+# Test outputs
+test_results/
+coverage/
+
+# macOS
+.DS_Store
+Thumbs.db

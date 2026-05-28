@@ -1,0 +1,86 @@
+/ {
+    compatible = "apple,iphone8", "apple,iphone10,1", "apple,iphone10,4";
+    #address-cells = <2>;
+    #size-cells = <2>;
+    model = "AgentOS on A11 Bionic (iPhone 8 / X)";
+
+    chosen {
+        bootargs = "root=/dev/hvcblk0p5 rw earlyprintk=hvc0 console=hvc0 cgroup_enable=memory cgroup_enable=cpuset";
+        stdout-path = "hvc0:115200n8";
+    };
+
+    cpus {
+        #address-cells = <2>;
+        #size-cells = <0>;
+        cpu-map { cluster0 { core0 { cpu = <&cpu0>; }; core1 { cpu = <&cpu1>; }; };
+                  cluster1 { core0 { cpu = <&cpu2>; }; core1 { cpu = <&cpu3>; };
+                            core2 { cpu = <&cpu4>; }; core3 { cpu = <&cpu5>; }; }; };
+        cpu@0 { compatible = "arm,cortex-a73"; reg = <0 0>; device_type = "cpu"; };
+        cpu@1 { compatible = "arm,cortex-a73"; reg = <0 1>; device_type = "cpu"; };
+        cpu@2 { compatible = "arm,cortex-a55"; reg = <0 2>; device_type = "cpu"; };
+        cpu@3 { compatible = "arm,cortex-a55"; reg = <0 3>; device_type = "cpu"; };
+        cpu@4 { compatible = "arm,cortex-a55"; reg = <0 4>; device_type = "cpu"; };
+        cpu@5 { compatible = "arm,cortex-a55"; reg = <0 5>; device_type = "cpu"; };
+    };
+
+    memory@800000000 {
+        device_type = "memory";
+        reg = <0x8 0x00000000 0x0 0xC0000000>;  /* 3 GB @ 0x800000000 */
+    };
+
+    bus {
+        compatible = "simple-bus";
+        #address-cells = <2>;
+        #size-cells = <2>;
+        ranges;
+
+        /* HAC UART (debug) */
+        uart0: hvc0 {
+            compatible = "ns16550a";
+            reg = <0x2 0x0A000000 0 0x4000>;
+            clock-frequency = <24000000>;
+            current-speed = <115200>;
+            reg-shift = <2>;
+            interrupts = <1>;
+        };
+
+        /* Display (framebuffer via HVC) */
+        display: hvc-display {
+            compatible = "agentos,hvc-display";
+            reg = <0x8 0x3C000000 0 0x04B04000>;  /* FB region */
+            interrupts = <50>;
+        };
+
+        /* Touchscreen via HVC */
+        touch: hvc-touch {
+            compatible = "agentos,hvc-touch";
+            interrupts = <52>;
+        };
+
+        /* Storage (ANS2 via HVC) */
+        storage: hvc-storage {
+            compatible = "agentos,hvc-storage";
+            interrupts = <60>;
+        };
+
+        /* WiFi (via HVC, PCIe endpoint) */
+        wifi: hvc-wifi {
+            compatible = "agentos,hvc-wifi";
+            reg = <0x3 0x00000000 0 0x10000000>;  /* PCIe config space */
+            interrupts = <65>;
+        };
+
+        /* /dev/hac control device */
+        hac_dev: hvc-hac {
+            compatible = "agentos,hvc-hac";
+        };
+    };
+
+    regulators {
+        compatible = "simple-bus";
+    };
+
+    aliases {
+        serial0 = &uart0;
+    };
+};
